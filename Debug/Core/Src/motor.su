@@ -1,0 +1,4 @@
+../Core/Src/motor.c:5:6:Motor_Init	24	static
+../Core/Src/motor.c:23:6:Motor_SetARR	16	static
+../Core/Src/motor.c:33:6:Motor_SetPWM	24	static
+../Core/Src/motor.c:60:6:Motor_Stop	16	static
