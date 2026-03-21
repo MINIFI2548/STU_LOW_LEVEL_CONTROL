@@ -47,7 +47,6 @@
 
 #define ADC_TO_CURRENT_LOAD_RATIO 0.05f
 #define ADC_CURRENT_LOAD_OFFSET 2048 // offset before convert
-
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -67,9 +66,9 @@ volatile int32_t previous_encoder = 0;
 volatile float omega = 0.0f; // rad/s
 volatile float current_load = 0.0f; //Amp
 
-float dutycycle = 0.5f;
-
 Motor_TypeDef myMotor1;
+
+float dutycycle = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -77,7 +76,6 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 void Current_Update();
 void Velocity_Update();
-void Motor_Control();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -115,24 +113,18 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_TIM3_Init();
-  MX_TIM6_Init();
   MX_ADC1_Init();
+  MX_TIM3_Init();
   MX_TIM8_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
-//  เเริ่มต้น ADC DMA โดยระบุความยาวเป็น ADC_BUF_SIZE
+  HAL_TIM_Base_Start(&htim8);
+  Motor_Init(&myMotor1, &htim8, TIM_CHANNEL_2, M_DIR_GPIO_Port, M_DIR_Pin, 1000);
+
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buffer, ADC_BUF_SIZE);
-//  เริ่มต้นอ่าน Encoder
   HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
-////  เริ่มต้น ADC พร้อมกับ DMA (adc_buffer ต้องถูกประกาศเป็น global variable)
-//  HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_1);
-//  เริ่มต้น Main Control Loop (ต้องเปิดหลังสุด เพื่อให้ระบบอื่นพร้อมก่อน)
+
   HAL_TIM_Base_Start_IT(&htim6);
-
-  //  ตั้งค่ามอเตอร์ (ชี้ไปที่ TIM8, CH1, ขา PC7, และสมมติค่า ARR = 8499)
-  Motor_Init(&myMotor1, &htim8, TIM_CHANNEL_1, GPIOC, GPIO_PIN_7, 8499);
-
-
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN BSP */
@@ -147,8 +139,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
-//  Motor_SetPWM(&myMotor1, dutycycle);
+	  Motor_SetPWM(&myMotor1, dutycycle);
+	  HAL_Delay(10);
   }
   /* USER CODE END 3 */
 }
@@ -233,23 +225,23 @@ void Current_Update(){
 
 void Velocity_Update(){
 	// อ่านค่า Encoder ปัจจุบัน (Cast เป็น int16_t เพื่อจัดการ Overflow)
-	    current_encoder = __HAL_TIM_GET_COUNTER(&htim3);
+	current_encoder = __HAL_TIM_GET_COUNTER(&htim3);
 
-	    // หา Delta Pulse
-	    int32_t delta_pulse = current_encoder - previous_encoder;
+	// หา Delta Pulse
+	int32_t delta_pulse = current_encoder - previous_encoder;
 
-	    uint8_t MULTI_TURN_QEI_CNT = __HAL_TIM_GET_AUTORELOAD(&htim3);
-	    if(delta_pulse > MULTI_TURN_QEI_CNT / 2){
-	    	delta_pulse -= MULTI_TURN_QEI_CNT;
-	    }else if(delta_pulse < -(MULTI_TURN_QEI_CNT /2)){
-	    	delta_pulse += MULTI_TURN_QEI_CNT;
-	    }
+	uint16_t MULTI_TURN_QEI_CNT = __HAL_TIM_GET_AUTORELOAD(&htim3);
+	if(delta_pulse > MULTI_TURN_QEI_CNT / 2){
+		delta_pulse -= MULTI_TURN_QEI_CNT;
+	}else if(delta_pulse < -(MULTI_TURN_QEI_CNT /2)){
+		delta_pulse += MULTI_TURN_QEI_CNT;
+	}
 
-	    // คำนวณความเร็วเชิงมุม (rad/s) ด้วยค่าคงที่ที่คำนวณไว้แล้ว
-	    omega = (float)delta_pulse * SPEED_CONVERSION_FACTOR;
+	// คำนวณความเร็วเชิงมุม (rad/s) ด้วยค่าคงที่ที่คำนวณไว้แล้ว
+	omega = (float)delta_pulse * SPEED_CONVERSION_FACTOR;
 
-	    // เก็บค่าไว้ใช้รอบถัดไป
-	    previous_encoder = current_encoder;
+	// เก็บค่าไว้ใช้รอบถัดไป
+	previous_encoder = current_encoder;
 }
 /* USER CODE END 4 */
 

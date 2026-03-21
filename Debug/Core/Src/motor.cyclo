@@ -1,4 +1,4 @@
 ../Core/Src/motor.c:5:6:Motor_Init	1
-../Core/Src/motor.c:23:6:Motor_SetARR	1
-../Core/Src/motor.c:33:6:Motor_SetPWM	9
-../Core/Src/motor.c:60:6:Motor_Stop	6
+../Core/Src/motor.c:24:6:Motor_SetARR	1
+../Core/Src/motor.c:34:6:Motor_SetPWM	9
+../Core/Src/motor.c:62:6:Motor_Stop	6

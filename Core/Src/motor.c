@@ -17,6 +17,7 @@ void Motor_Init(Motor_TypeDef *motor, TIM_HandleTypeDef *htim, uint32_t channel,
 
     // เริ่มสร้างสัญญาณ PWM
     HAL_TIM_PWM_Start(motor->htim, motor->channel);
+    __HAL_TIM_MOE_ENABLE(motor->htim);
 }
 
 // 2. ฟังก์ชันอัปเดตค่า ARR (ปรับความถี่ PWM)
@@ -42,6 +43,7 @@ void Motor_SetPWM(Motor_TypeDef *motor, float control_signal)
     if (control_signal >= 0.0f)
     {
         HAL_GPIO_WritePin(motor->dir_port, motor->dir_pin, GPIO_PIN_RESET); // กำหนดทิศ CW
+
     }
     else
     {
