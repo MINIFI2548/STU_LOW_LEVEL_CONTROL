@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "math.h"
 #include "motor.h"
+#include "joy.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -69,6 +70,11 @@ volatile float current_load = 0.0f; //Amp
 Motor_TypeDef myMotor1;
 
 float dutycycle = 0;
+
+int pox = 0;
+
+Joy_TypeDef myJoy;
+volatile uint16_t joy_adc_buffer[2];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -113,16 +119,20 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_ADC1_Init();
   MX_TIM3_Init();
   MX_TIM8_Init();
   MX_TIM6_Init();
+  MX_ADC2_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start(&htim8);
   Motor_Init(&myMotor1, &htim8, TIM_CHANNEL_2, M_DIR_GPIO_Port, M_DIR_Pin, 1000);
 
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buffer, ADC_BUF_SIZE);
   HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
+
+  Joy_Init(&myJoy);
+  HAL_ADC_Start_DMA(&hadc2, (uint32_t*)joy_adc_buffer, 2);
 
   HAL_TIM_Base_Start_IT(&htim6);
   /* USER CODE END 2 */
@@ -139,8 +149,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  Motor_SetPWM(&myMotor1, dutycycle);
-	  HAL_Delay(10);
+//	  Motor_SetPWM(&myMotor1, dutycycle);
+//	  HAL_Delay(10);
   }
   /* USER CODE END 3 */
 }
@@ -205,6 +215,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 			Velocity_Update();
 			speed_loop_counter = 0;
 		}
+		dutycycle = myJoy.axes_X;
+		Motor_SetPWM(&myMotor1, dutycycle);
+		Joy_Update(&myJoy, joy_adc_buffer[1], joy_adc_buffer[0]);
+		if (HAL_GPIO_ReadPin(Pox_GPIO_Port, Pox_Pin) == GPIO_PIN_SET){
+			pox = 1;
+		}else {
+			pox = 0;
+		}
 	}
 }
 
@@ -220,7 +238,8 @@ void Current_Update(){
 	adc_AVG = (float)sum_raw_current * ADC_BUF_SIZE_INV;
 
 	// แปลงเป็นกระแส (Amp)
-	current_load = (adc_AVG - ADC_CURRENT_LOAD_OFFSET) * ADC_TO_CURRENT_LOAD_RATIO;
+//	current_load = (adc_AVG - ADC_CURRENT_LOAD_OFFSET) * ADC_TO_CURRENT_LOAD_RATIO;
+	current_load = -(0.0146 * adc_AVG - 30.0702);
 }
 
 void Velocity_Update(){
