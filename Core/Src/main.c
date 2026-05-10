@@ -126,7 +126,7 @@ int main(void)
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start(&htim8);
-  Motor_Init(&myMotor1, &htim8, TIM_CHANNEL_2, M_DIR_GPIO_Port, M_DIR_Pin, 1000);
+  Motor_Init(&myMotor1, &htim8, TIM_CHANNEL_1, M_DIR_GPIO_Port, M_DIR_Pin, 1000);
 
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buffer, ADC_BUF_SIZE);
   HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);

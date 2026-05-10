@@ -73,7 +73,7 @@ void Error_Handler(void);
 #define LPUART1_RX_GPIO_Port GPIOA
 #define Pox_Pin GPIO_PIN_5
 #define Pox_GPIO_Port GPIOC
-#define M_DIR_Pin GPIO_PIN_6
+#define M_DIR_Pin GPIO_PIN_8
 #define M_DIR_GPIO_Port GPIOC
 #define T_SWDIO_Pin GPIO_PIN_13
 #define T_SWDIO_GPIO_Port GPIOA

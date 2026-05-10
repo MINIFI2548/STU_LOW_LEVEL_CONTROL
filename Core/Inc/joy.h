@@ -20,6 +20,8 @@ typedef struct {
     JoyButtonState_t btn_B;  // ปุ่ม B (PB15)
     JoyButtonState_t btn_C;  // ปุ่ม C (PB14)
     JoyButtonState_t btn_D;  // ปุ่ม D (PB13)
+    JoyButtonState_t btn_E;
+    JoyButtonState_t btn_F;
 } Joy_TypeDef;
 
 // ฟังก์ชันหลัก

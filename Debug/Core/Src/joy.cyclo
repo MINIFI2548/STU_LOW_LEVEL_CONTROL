@@ -1,2 +1,2 @@
 ../Core/Src/joy.c:9:6:Joy_Init	1
-../Core/Src/joy.c:20:6:Joy_Update	7
+../Core/Src/joy.c:22:6:Joy_Update	7

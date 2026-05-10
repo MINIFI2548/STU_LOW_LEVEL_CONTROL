@@ -15,6 +15,8 @@ void Joy_Init(Joy_TypeDef *joy)
 	joy->btn_B = JOY_BTN_RELEASED;
 	joy->btn_C = JOY_BTN_RELEASED;
 	joy->btn_D = JOY_BTN_RELEASED;
+	joy->btn_E = JOY_BTN_RELEASED;
+	joy->btn_F = JOY_BTN_RELEASED;
 }
 
 void Joy_Update(Joy_TypeDef *joy, uint16_t raw_adc_X, uint16_t raw_adc_Y)
@@ -49,8 +51,10 @@ void Joy_Update(Joy_TypeDef *joy, uint16_t raw_adc_X, uint16_t raw_adc_Y)
     // 3. การอัปเดตสถานะปุ่ม (แบบ Active-Low)
     // ==========================================
     // หมายเหตุ: ต้องมั่นใจว่าใน CubeMX มีการตั้งขา PB เป็น Pull-up (PU) ไว้แล้ว
-    joy->btn_A = (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1) == GPIO_PIN_RESET) ? JOY_BTN_PRESSED : JOY_BTN_RELEASED;
-	joy->btn_B = (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_15) == GPIO_PIN_RESET) ? JOY_BTN_PRESSED : JOY_BTN_RELEASED;
-	joy->btn_C = (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14) == GPIO_PIN_RESET) ? JOY_BTN_PRESSED : JOY_BTN_RELEASED;
-	joy->btn_D = (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13) == GPIO_PIN_RESET) ? JOY_BTN_PRESSED : JOY_BTN_RELEASED;
+    joy->btn_A = (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12) == GPIO_PIN_RESET) ? JOY_BTN_PRESSED : JOY_BTN_RELEASED;
+	joy->btn_B = (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_11) == GPIO_PIN_RESET) ? JOY_BTN_PRESSED : JOY_BTN_RELEASED;
+	joy->btn_C = (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13) == GPIO_PIN_RESET) ? JOY_BTN_PRESSED : JOY_BTN_RELEASED;
+	joy->btn_D = (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1) == GPIO_PIN_RESET) ? JOY_BTN_PRESSED : JOY_BTN_RELEASED;
+	joy->btn_E = (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_15) == GPIO_PIN_RESET) ? JOY_BTN_PRESSED : JOY_BTN_RELEASED;
+	joy->btn_F = (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14) == GPIO_PIN_RESET) ? JOY_BTN_PRESSED : JOY_BTN_RELEASED;
 }
